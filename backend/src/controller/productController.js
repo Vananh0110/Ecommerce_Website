@@ -27,6 +27,18 @@ const getProductById = async (req, res) => {
   }
 };
 
+const getProductsByCategoryId = async (req, res) => {
+    const { category_id } = req.params;
+
+    try {
+        const [products] = await pool.query(queries.getProductsByCategoryId, [category_id]);
+        res.json(products);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
 const addProduct = async (req, res) => {
   const { name, description, price, status, stock, category_id } = req.body;
   const image = req.file ? `uploads/products/${req.file.filename}` : '';
@@ -148,4 +160,5 @@ module.exports = {
   addProduct,
   updateProduct,
   deleteProduct,
+  getProductsByCategoryId
 };

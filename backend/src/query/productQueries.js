@@ -10,6 +10,8 @@ const deleteProduct = `DELETE FROM products WHERE product_id = ?`;
 
 const getImage = `SELECT image FROM product WHERE product_id = ?`;
 
+const getProductsByCategoryId = `SELECT * FROM products WHERE category_id = ?`;
+
 module.exports = {
   getAllProducts,
   getProductById,
@@ -17,4 +19,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getImage,
+  getProductsByCategoryId
 };

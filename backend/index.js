@@ -21,7 +21,7 @@ app.use('/category', categoryRoute);
 app.use('/product', productRoute);
 app.use('/comment', commentRoute);
 
-app.use('/images', express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 app.use('/', (req, res) => {
   res.send('Ecomerce Website');
