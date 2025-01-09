@@ -4,7 +4,8 @@ import AdminLayout from '../../layouts/admin/Layout';
 const AdminDashboard = () => {
   return (
     <AdminLayout>
-      <div>AdminDashboard</div>
+       <h1 className="text-2xl font-semibold">Bảng điều khiển</h1>
+       
     </AdminLayout>
   );
 };

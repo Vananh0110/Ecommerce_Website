@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Menu, Avatar, Popover } from 'antd';
+import { Input, Menu, Avatar, Popover, Badge } from 'antd';
 import {
   HomeOutlined,
   AppstoreOutlined,
@@ -9,9 +9,12 @@ import {
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
+import axios from '../../api/axios';
 
 const Layout = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [cartSummary, setCartSummary] = useState({ totalItems: 0 });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +24,18 @@ const Layout = ({ children }) => {
       setUser(storedUser);
     }
   }, []);
+
+  const fetchCart = async (userId) => {
+    try {
+      const response = await axios.get(`/cart/${userId}`);
+      const cartData = response.data;
+      const totalItems = cartData.reduce((sum, item) => sum + item.quantity, 0);
+      setCart(cartData.reverse().slice(0, 3));
+      setCartSummary({ totalItems });
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+    }
+  };
 
   const accountOptions = (
     <div className="flex flex-col gap-3">
@@ -39,6 +54,44 @@ const Layout = ({ children }) => {
       >
         Đăng xuất
       </button>
+    </div>
+  );
+
+  const cartPopoverContent = (
+    <div className="flex flex-col gap-3 pt-2 w-80">
+      <p className="text-sm font-semibold text-slate-700">
+        Tổng số sản phẩm: {cartSummary.totalItems}
+      </p>
+      {cart.length > 0 ? (
+        <>
+          {cart.map((item) => (
+            <div key={item.product_id} className="flex items-center gap-3">
+              <img
+                src={`http://localhost:5000/${item.image}`}
+                alt={item.name}
+                className="h-12 w-12 object-cover rounded"
+              />
+              <div>
+                <p className="font-semibold text-sm">{item.name}</p>
+                <p className="text-xs text-slate-500">
+                  {item.quantity} x{' '}
+                  {new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                  }).format(item.price)}
+                </p>
+              </div>
+            </div>
+          ))}
+        </>
+      ) : (
+        <p className="text-sm text-slate-500">Giỏ hàng của bạn đang trống</p>
+      )}
+      <div className="flex justify-end">
+        <button className="bg-red-500 text-white w-24 p-1 rounded-md ">
+          Mua ngay
+        </button>
+      </div>
     </div>
   );
 
@@ -63,9 +116,19 @@ const Layout = ({ children }) => {
             <div className="flex space-x-3 items-center">
               {user ? (
                 <>
-                  <button className="bg-red-500 text-sm text-white font-normal py-2 px-4 rounded hover:opacity-85">
-                    <ShoppingCartOutlined /> Giỏ hàng
-                  </button>
+                  <Popover
+                    content={cartPopoverContent}
+                    trigger="hover"
+                    onOpenChange={(visible) => {
+                      if (visible) fetchCart(user.user_id);
+                    }}
+                  >
+                    <Badge count={cartSummary.totalItems}>
+                      <button className="bg-red-500 text-sm text-white font-normal py-2 px-4 rounded hover:opacity-85">
+                        <ShoppingCartOutlined /> Giỏ hàng
+                      </button>
+                    </Badge>
+                  </Popover>
                   <Popover content={accountOptions} trigger="hover">
                     <div className="flex flex-row gap-3 items-center cursor-pointer">
                       {user.avatar ? (
@@ -120,7 +183,7 @@ const Layout = ({ children }) => {
       <main className="bg-slate-100 pb-16">
         <div
           className="mx-auto w-full max-w-7xl"
-          style={{ paddingTop: '130px' }}
+          style={{ paddingTop: '155px' }}
         >
           {children}
         </div>

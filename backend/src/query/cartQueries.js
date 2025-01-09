@@ -1,6 +1,6 @@
 const getAllCartByUserId = `SELECT * FROM cart JOIN products ON cart.product_id = products.product_id WHERE user_id = ?`;
 
-const addProductToCart = `INSERT INTO cart (user_id, product_id, quantity) VALUES (?)`;
+const addProductToCart = `INSERT INTO cart (user_id, product_id, quantity) VALUES (?, ?, ?)`;
 
 const updateQuantityProduct = `UPDATE cart SET quantity = ? WHERE cart_id = ?`;
 

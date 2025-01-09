@@ -1,10 +1,10 @@
 import React from 'react'
-
+import Layout from '../../layouts/user/Layout';
 const OrderPage = () => {
   return (
-    <div>
-      Order Page
-    </div>
+    <Layout>
+      
+    </Layout>
   )
 }
 

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from '../../api/axios';
 import Layout from '../../layouts/user/Layout';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
@@ -28,6 +29,24 @@ const ProductDetailPage = () => {
 
   const decrementQuantity = () => {
     setQuantity((prev) => (prev > 0 ? prev - 1 : 1));
+  };
+
+  const addToCart = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const user_id = user?.user_id;
+    const quantityToAdd = quantity > 0 ? quantity : 1;
+    
+    try {
+      await axios.post('/cart/', {
+        user_id,
+        product_id: productId,
+        quantity: quantityToAdd,
+      });
+      message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+    } catch (error) {
+      message.error('Thêm vào giỏ hàng thất bại!');
+      console.error('Error adding to cart:', error);
+    }
   };
 
   return (
@@ -71,8 +90,15 @@ const ProductDetailPage = () => {
             </div>
           </div>
           <div className="flex flex-row gap-3 mt-12">
-            <button className="py-3 border w-56 border-red-500 text-red-500 bg-orange-50 hover:opacity-75">Thêm Vào Giỏ Hàng</button>
-            <button className="py-3 bg-red-500 w-56 text-white hover:opacity-85">Mua Ngay</button>
+            <button
+              onClick={addToCart}
+              className="py-3 border w-56 border-red-500 text-red-500 bg-orange-50 hover:opacity-75"
+            >
+              Thêm Vào Giỏ Hàng
+            </button>
+            <button className="py-3 bg-red-500 w-56 text-white hover:opacity-85">
+              Mua Ngay
+            </button>
           </div>
         </div>
       </div>

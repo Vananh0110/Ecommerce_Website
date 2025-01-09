@@ -86,7 +86,7 @@ const updateProduct = async (req, res) => {
         return res.status(404).json({ message: 'Product not found' });
       }
       if (oldImagePath && newImagePath !== oldImagePath) {
-        fs.unlink(path.join(__dirname, '..', oldImagePath), (err) => {
+        fs.unlink(path.join(__dirname, '../..', oldImagePath), (err) => {
           if (err) console.log(`Failed to delete old image: ${err}`);
         });
       }
@@ -124,7 +124,7 @@ const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
     const [image] = await pool.query(
-      'SELECT image FROM product WHERE product_id = ?',
+      queries.getImage,
       [id]
     );
     if (image.length === 0) {
@@ -137,7 +137,7 @@ const deleteProduct = async (req, res) => {
     }
 
     if (imagePath) {
-      fs.unlink(path.join(__dirname, '..', imagePath), (err) => {
+      fs.unlink(path.join(__dirname, '../..', imagePath), (err) => {
         if (err) {
           console.log(`Failed to delete image: ${err}`);
           return res

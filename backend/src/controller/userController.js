@@ -16,12 +16,10 @@ const registerUser = async (req, res) => {
       email,
       hashedPassword,
     ]);
-    res
-      .status(201)
-      .json({
-        message: 'User registered successfully',
-        userId: result.insertId,
-      });
+    res.status(201).json({
+      message: 'User registered successfully',
+      userId: result.insertId,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal Server Error' });
@@ -75,9 +73,43 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUsersCount = async (req, res) => {
+  try {
+    const [result] = await pool.query(queries.usersCount);
+    res.json({ count: result[0].total_users });
+  } catch (error) {
+    console.error('Failed to fetch user account:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const adminUpdateUser = async (req, res) => {
+  const { user_id } = req.params;
+  const { user_name, email, phone_number, address, status } = req.body;
+
+  try {
+    const [result] = await pool.query(queries.adminUpdateUser, [
+      user_name,
+      email,
+      phone_number,
+      address,
+      status,
+      user_id,
+    ]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 module.exports = {
   loginUser,
   registerUser,
   getAllUsers,
   getUserById,
+  adminUpdateUser
 };

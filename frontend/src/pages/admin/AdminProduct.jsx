@@ -35,6 +35,11 @@ const AdminProduct = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isDetailModalVisible, setIsDetailModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [productToEdit, setProductToEdit] = useState(null);
+
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -133,6 +138,62 @@ const AdminProduct = () => {
 
   const closeDetailModal = () => {
     setIsDetailModalVisible(false);
+  };
+
+  const showDeleteModal = (product) => {
+    setProductToDelete(product);
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleDeleteModalCancel = () => {
+    setIsDeleteModalVisible(false);
+    setProductToDelete(null);
+  };
+
+  const handleDeleteProduct = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await axios.delete(`/product/${productToDelete.product_id}`);
+      message.success('Sản phẩm đã được xóa thành công!');
+      setIsDeleteModalVisible(false);
+      fetchProducts();
+    } catch (error) {
+      message.error('Xóa sản phẩm thất bại.');
+      console.error(error);
+    }
+  };
+
+  const showEditModal = (product) => {
+    setProductToEdit(product);
+    setIsEditModalVisible(true);
+  };
+
+  const handleEditProduct = async (values) => {
+    const formData = new FormData();
+    formData.append('name', values.name);
+    formData.append('description', values.description);
+    formData.append('price', values.price);
+    formData.append('status', values.status);
+    formData.append('stock', values.stock);
+    formData.append('category_id', values.category_id);
+    if (values.image?.file?.originFileObj) {
+      formData.append('image', values.image.file.originFileObj);
+    }
+
+    try {
+      await axios.put(`/product/${productToEdit.product_id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      message.success('Cập nhật sản phẩm thành công!');
+      setIsEditModalVisible(false);
+      fetchProducts();
+    } catch (error) {
+      message.error('Cập nhật sản phẩm thất bại.');
+      console.error(error);
+    }
   };
 
   return (
@@ -261,6 +322,7 @@ const AdminProduct = () => {
                   variant="solid"
                   onClick={(e) => {
                     e.stopPropagation();
+                    showEditModal(product);
                   }}
                 />
                 <Button
@@ -270,12 +332,23 @@ const AdminProduct = () => {
                   variant="solid"
                   onClick={(e) => {
                     e.stopPropagation();
+                    showDeleteModal(product);
                   }}
                 />
               </div>
             </div>
           ))}
       </div>
+
+      <Pagination
+        current={currentPage}
+        pageSize={pageSize}
+        total={displayProducts.length}
+        onChange={handlePageChange}
+        showSizeChanger={false}
+        className="mt-10"
+        align="center"
+      />
 
       <Modal
         title="Chi tiết sản phẩm"
@@ -311,15 +384,77 @@ const AdminProduct = () => {
         )}
       </Modal>
 
-      <Pagination
-        current={currentPage}
-        pageSize={pageSize}
-        total={displayProducts.length}
-        onChange={handlePageChange}
-        showSizeChanger={false}
-        className="mt-10"
-        align="center"
-      />
+      <Modal
+        title="Xác nhận xóa sản phẩm"
+        visible={isDeleteModalVisible}
+        onCancel={handleDeleteModalCancel}
+        onOk={handleDeleteProduct}
+        okText="Xóa"
+        cancelText="Hủy"
+        centered
+        okButtonProps={{ style: { backgroundColor: 'red' } }}
+      >
+        <p>Bạn có chắc chắn muốn xóa sản phẩm "{productToDelete?.name}"?</p>
+      </Modal>
+
+      <Modal
+        title="Chỉnh sửa sản phẩm"
+        visible={isEditModalVisible}
+        onCancel={() => setIsEditModalVisible(false)}
+        footer={null}
+        centered
+        width={760}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={productToEdit} // Tải dữ liệu sản phẩm lên form
+          onFinish={handleEditProduct} // Gửi dữ liệu đã chỉnh sửa
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="name"
+                label="Tên Sản Phẩm"
+                rules={[{ required: true }]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item name="description" label="Mô Tả">
+                <TextArea />
+              </Form.Item>
+              <Form.Item name="price" label="Giá" rules={[{ required: true }]}>
+                <InputNumber min={0} step={0.01} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="stock" label="Số Lượng">
+                <InputNumber min={0} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item name="status" label="Trạng Thái">
+                <Select>
+                  <Option value="In stock">In Stock</Option>
+                  <Option value="Out of stock">Out of stock</Option>
+                  <Option value="Discontinued">Discontinued</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="image" label="Ảnh Sản Phẩm">
+                <Upload name="image" listType="picture-card">
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Tải Ảnh</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Lưu Thay Đổi
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };

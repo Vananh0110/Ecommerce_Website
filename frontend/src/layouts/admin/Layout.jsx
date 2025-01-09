@@ -49,7 +49,7 @@ const AdminLayout = ({ children }) => {
             <Link to="/admin/dashboard">Bảng Điều Khiển</Link>
           </Menu.Item>
           <Menu.Item key="2" icon={<UserOutlined />}>
-            <Link to="/admin/users">Người Dùng</Link>
+            <Link to="/admin/users">Khách Hàng</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<AppstoreOutlined />}>
             <Link to="/admin/categories">Danh mục</Link>
@@ -88,8 +88,8 @@ const AdminLayout = ({ children }) => {
         >
           {children}
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
-          Created by PVA
+        <Footer className="bg-white">
+          
         </Footer>
       </Layout>
     </Layout>
