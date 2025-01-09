@@ -1,10 +1,10 @@
-const createOrder = `INSERT INTO orders (product_id, user_id, quantity, total_money, payment_type, order_status, user_note) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+const createOrder = `INSERT INTO orders (product_id, user_id, quantity, total_money, payment_type, order_status, user_note, receiver_name, receiver_phone, receiver_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 const getOrderById = `SELECT * FROM orders WHERE order_id = ?`;
 
 const getAllOrders = `SELECT * FROM orders`;
 
-const updateOrder = `UPDATE orders SET quantity = ?, total_money = ?, payment_type = ?, order_status = ?, user_note = ? WHERE order_id = ?`;
+const updateOrder = `UPDATE orders SET quantity = ?, total_money = ?, payment_type = ?, order_status = ?, user_note = ?, receiver_name = ?, receiver_phone = ?, receiver_address = ? WHERE order_id = ?`;
 
 const deleteOrder = `DELETE FROM orders WHERE order_id = ?`;
 

@@ -10,6 +10,9 @@ const createOrder = async (req, res) => {
     payment_type,
     order_status,
     user_note,
+    receiver_name,
+    receiver_phone,
+    receiver_address,
   } = req.body;
 
   try {
@@ -21,6 +24,9 @@ const createOrder = async (req, res) => {
       payment_type,
       order_status,
       user_note,
+      receiver_name,
+      receiver_phone,
+      receiver_address,
     ]);
     res.status(201).json({ message: 'Order created successfully' });
   } catch (error) {
@@ -59,6 +65,9 @@ const updateOrder = async (req, res) => {
     payment_type,
     order_status,
     user_note,
+    receiver_name,
+    receiver_phone,
+    receiver_address,
   } = req.body;
 
   try {
@@ -68,7 +77,10 @@ const updateOrder = async (req, res) => {
       payment_type,
       order_status,
       user_note,
-      order_id,
+      receiver_name,
+      receiver_phone,
+      receiver_address,
+      order_id
     ]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'Order not found' });
@@ -96,27 +108,29 @@ const deleteOrder = async (req, res) => {
 };
 
 const getOrdersByUserId = async (req, res) => {
-    const { user_id } = req.params;
+  const { user_id } = req.params;
 
-    try {
-        const [orders] = await pool.query(queries.getOrdersByUserId, [user_id]);
-        res.json(orders);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+  try {
+    const [orders] = await pool.query(queries.getOrdersByUserId, [user_id]);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const getOrdersByProductId = async (req, res) => {
-    const { product_id } = req.params;
+  const { product_id } = req.params;
 
-    try {
-        const [orders] = await pool.query(queries.getOrdersByProductId, [product_id]);
-        res.json(orders);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+  try {
+    const [orders] = await pool.query(queries.getOrdersByProductId, [
+      product_id,
+    ]);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 module.exports = {
@@ -126,5 +140,5 @@ module.exports = {
   updateOrder,
   deleteOrder,
   getOrdersByUserId,
-  getOrdersByProductId
+  getOrdersByProductId,
 };

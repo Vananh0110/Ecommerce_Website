@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Layout from '../../components/Layout';
-import { Carousel } from 'antd';
+import Layout from '../../layouts/user/Layout';
+import { Carousel, Pagination } from 'antd';
 import banner1 from '../../assets/images/banner1.jpg';
 import banner2 from '../../assets/images/banner2.jpg';
 import banner3 from '../../assets/images/banner3.jpg';
@@ -13,6 +13,8 @@ const HomePage = () => {
   const [products, setProducts] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12;
 
   const fetchCategories = async () => {
     try {
@@ -54,6 +56,17 @@ const HomePage = () => {
   useEffect(() => {
     setFilteredProducts(products);
   }, [products]);
+
+  const indexOfLastProduct = currentPage * pageSize;
+  const indexOfFirstProduct = indexOfLastProduct - pageSize;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  const handleChangePage = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <Layout>
@@ -104,13 +117,14 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-        <div className="basis-3/4">
+        <div className="basis-3/4 bg-white p-4">
           <div className="pb-4 px-3 text-lg">
             {filteredProducts.length} sản phẩm
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
-              <Link to={`/product/${product.product_id}`}
+            {currentProducts.map((product) => (
+              <Link
+                to={`/product/${product.product_id}`}
                 key={product.product_id}
                 className="border rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 ease-in-out cursor-pointer"
               >
@@ -132,6 +146,19 @@ const HomePage = () => {
                 </div>
               </Link>
             ))}
+          </div>
+          <div className="mt-6">
+            {filteredProducts.length > pageSize && (
+              <Pagination
+                align="center"
+                current={currentPage}
+                onChange={handleChangePage}
+                total={filteredProducts.length}
+                pageSize={pageSize}
+                showSizeChanger={false}
+                
+              />
+            )}
           </div>
         </div>
       </div>
