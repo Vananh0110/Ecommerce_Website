@@ -58,9 +58,27 @@ const updateCategory = async (req, res) => {
   }
 };
 
+const deleteCategory = async (req, res) => {
+  const {category_id} = req.params;
+  try {
+    const [result] = await pool.query(queries.deleteCategory, [category_id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Category not found' });
+    }
+
+    res.json({ message: 'Categpry deleted successfully' });
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
 module.exports = {
   getAllCategories,
   getCategoryById,
   addCategory,
   updateCategory,
+  deleteCategory
 };

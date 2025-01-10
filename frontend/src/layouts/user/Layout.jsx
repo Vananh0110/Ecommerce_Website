@@ -48,7 +48,7 @@ const Layout = ({ children }) => {
       <button
         onClick={() => {
           sessionStorage.clear();
-          navigate('/');
+          navigate('/login');
         }}
         className="px-3 hover:text-red-500"
       >
@@ -69,7 +69,7 @@ const Layout = ({ children }) => {
               <img
                 src={`http://localhost:5000/${item.image}`}
                 alt={item.name}
-                className="h-12 w-12 object-cover rounded"
+                className="h-14 w-14 object-cover rounded"
               />
               <div>
                 <p className="font-semibold text-sm">{item.name}</p>
@@ -182,15 +182,14 @@ const Layout = ({ children }) => {
           </Menu.Item>
         </Menu>
       </header>
-      <main className="bg-slate-100 pb-16">
+      <main className="bg-slate-100 pb-36">
         <div
-          className="mx-auto w-full max-w-7xl"
+          className="mx-auto max-w-7xl"
           style={{ paddingTop: '155px' }}
         >
           {children}
         </div>
       </main>
-      <footer className=""></footer>
     </>
   );
 };

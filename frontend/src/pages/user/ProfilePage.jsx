@@ -1,12 +1,11 @@
 import React from 'react'
-
+import Layout from '../../layouts/user/Layout'
 const ProfilePage = () => {
   return (
-    <div>
-      ProfilePage
-    </div>
+    <Layout>
+      Profile Page
+    </Layout>
   )
 }
 
-export default ProfilePage;
-
+export default ProfilePage

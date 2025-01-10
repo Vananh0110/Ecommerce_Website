@@ -116,34 +116,43 @@ const AdminUser = () => {
       dataIndex: 'avatar',
       key: 'avatar',
       render: (text, record) => (
-        <Avatar src={record.avatar} alt={record.user_name} />
+        <Avatar
+          size="large"
+          src={`http://localhost:5000/${record.avatar}`}
+          alt={record.user_name}
+        />
       ),
-      width: '10%',
     },
     {
       title: 'Tên người dùng',
       dataIndex: 'user_name',
       key: 'user_name',
-      width: '20%',
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
-      width: '20%',
     },
     {
       title: 'Số điện thoại',
       dataIndex: 'phone_number',
       key: 'phone_number',
-      width: '15%',
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'address',
       key: 'address',
-      width: '25%',
     },
+    // {
+    //   title: 'Đơn hàng',
+    //   dataIndex: 'total_orders',
+    //   key: 'total_orders',
+    // },
+    // {
+    //   title: 'Tổng tiền mua hàng',
+    //   dataIndex: 'total_paid_amount',
+    //   key: 'total_paid_amount',
+    // },
     {
       title: 'Trạng thái',
       dataIndex: 'status',
@@ -172,22 +181,17 @@ const AdminUser = () => {
 
         return <Tag color={color}>{text}</Tag>;
       },
-      width: '15%',
     },
     {
       title: 'Hành động',
       key: 'actions',
       render: (text, record) => (
         <div className="flex gap-2">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-            
-          />
+          <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
           <Button
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record.user_id)}
-            danger 
+            danger
           />
         </div>
       ),

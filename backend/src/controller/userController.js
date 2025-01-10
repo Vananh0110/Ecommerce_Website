@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const pool = require('../../db');
 const queries = require('../query/userQueries');
+const fs = require('fs');
+const path = require('path');
 
 const registerUser = async (req, res) => {
   try {
@@ -106,10 +108,101 @@ const adminUpdateUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { user_id } = req.params;
+  const { current_password, new_password } = req.body;
+
+  try {
+    const [user] = await pool.query(queries.changePassword, [user_id]);
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    const isMatch = await bcrypt.compare(current_password, user[0].password);
+
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: 'Current password is incorrect.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+
+    await pool.query(queries.updatePassword, [hashedPassword, user_id]);
+
+    res.status(200).json({ message: 'Password updated successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error.' });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const { user_id } = req.params;
+  const { user_name, phone_number, address } = req.body;
+
+  try {
+    const [oldImage] = await pool.query(queries.getAvatar, [user_id]);
+    const oldImagePath = oldImage.length > 0 ? oldImage[0].avatar : null;
+
+    const newImagePath = req.file?.filename
+      ? `uploads/avatars/${req.file.filename}`
+      : oldImagePath;
+
+    const [result] = await pool.query(queries.updateUser, [
+      user_name,
+      phone_number,
+      address,
+      newImagePath,
+      user_id,
+    ]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (req.file && oldImagePath && newImagePath !== oldImagePath) {
+      const oldImageFullPath = path.join(__dirname, '../..', oldImagePath);
+      if (fs.existsSync(oldImageFullPath)) {
+        fs.unlink(oldImageFullPath, (err) => {
+          if (err) {
+            console.error('Error deleting old image:', err);
+          }
+        });
+      }
+    }
+
+    res.json({
+      message: 'User updated successfully',
+      avatar: newImagePath,
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({
+      message: 'Internal server error',
+      error: error.message,
+    });
+  }
+};
+
+const getUserWithOrderAmount = async (req, res) => {
+  try {
+    const [users] = await pool.query(queries.getUserWithOrderAmount);
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
 module.exports = {
   loginUser,
   registerUser,
   getAllUsers,
   getUserById,
-  adminUpdateUser
+  adminUpdateUser,
+  changePassword,
+  updateUser,
+  getUserWithOrderAmount
 };

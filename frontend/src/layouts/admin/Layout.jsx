@@ -65,14 +65,14 @@ const AdminLayout = ({ children }) => {
           </Menu.Item>
         </Menu>
       </Sider>
-      <Layout style={{ marginLeft: 200 }}>
+      <Layout className="bg-slate-100" style={{ marginLeft: 200 }}>
         <Header
           style={{
             padding: 0,
             background: '#fff',
             textAlign: 'center',
             position: 'fixed',
-            zIndex: 1,
+            zIndex: 100,
             width: 'calc(100% - 200px)',
           }}
         >
@@ -88,9 +88,7 @@ const AdminLayout = ({ children }) => {
         >
           {children}
         </Content>
-        <Footer className="bg-white">
-          
-        </Footer>
+        <Footer className=""></Footer>
       </Layout>
     </Layout>
   );

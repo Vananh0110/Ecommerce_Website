@@ -5,12 +5,17 @@ const fs = require('fs');
 
 const productImageDir = path.join(__dirname, '../uploads/products');
 const commentImageDir = path.join(__dirname, '../uploads/comments');
+const avatarImageDir = path.join(__dirname, '../uploads/avatars');
 
 if (!fs.existsSync(productImageDir)) {
     fs.mkdirSync(productImageDir, { recursive: true });
 }
 if (!fs.existsSync(commentImageDir)) {
     fs.mkdirSync(commentImageDir, { recursive: true });
+}
+
+if (!fs.existsSync(avatarImageDir)) {
+    fs.mkdirSync(avatarImageDir, { recursive: true });
 }
 
 const productStorage = multer.diskStorage({
@@ -29,6 +34,15 @@ const commentStorage = multer.diskStorage({
     filename: function(req, file, cb) {
         cb(null, Date.now() + '-' + file.originalname);
     }
+});
+
+const avatarStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, avatarImageDir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    },
 });
 
 const uploadProduct = multer({
@@ -55,4 +69,15 @@ const uploadComment = multer({
     }
 });
 
-module.exports = { uploadProduct, uploadComment };
+const uploadAvatar = multer({
+    storage: avatarStorage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: function (req, file, cb) {
+        if (file.mimetype.startsWith('image')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only images are allowed!'), false);
+        }
+    },
+});
+module.exports = { uploadProduct, uploadComment, uploadAvatar };

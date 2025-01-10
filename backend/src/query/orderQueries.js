@@ -52,6 +52,8 @@ const orderQueries = {
   deleteOrderItems: `
     DELETE FROM order_items WHERE order_id = ?
   `,
+  getAllOrders: `
+  SELECT * FROM orders;`,
 };
 
 module.exports = orderQueries;

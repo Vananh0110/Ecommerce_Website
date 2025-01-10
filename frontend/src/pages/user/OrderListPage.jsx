@@ -43,9 +43,10 @@ const OrderListPage = () => {
       key: 'order_status',
       render: (status) => {
         let color = 'gray';
-        if (status === 'Processing') color = 'blue';
+        if (status === 'Pending') color = 'blue';
         if (status === 'Shipped') color = 'orange';
-        if (status === 'Delivered') color = 'green';
+        if (status === 'Paid') color = 'green'
+        if (status === 'Delivered') color = 'yellow';
         if (status === 'Cancelled') color = 'red';
         return <Tag color={color}>{status}</Tag>;
       },
@@ -72,10 +73,13 @@ const OrderListPage = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (date) =>
-        new Date(date).toLocaleDateString('vi-VN', {
+        new Date(date).toLocaleString('vi-VN', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
         }),
     },
     {
@@ -94,14 +98,14 @@ const OrderListPage = () => {
 
   return (
     <Layout>
-      <div className="bg-white p-6 rounded shadow mt-6 max-w-7xl mx-auto">
+      <div className="bg-white p-6 rounded shadow mt-6 max-w-7xl mx-auto min-h-96">
         <h1 className="text-2xl font-semibold mb-6">Danh sách đơn hàng</h1>
         <Table
           columns={columns}
           dataSource={orders}
           rowKey="order_id"
           loading={loading}
-          pagination={{
+          pagination={{ 
             pageSize: 10,
             showSizeChanger: false,
           }}

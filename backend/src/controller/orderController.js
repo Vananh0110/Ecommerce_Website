@@ -143,6 +143,15 @@ const deleteOrder = async (req, res) => {
   }
 };
 
+const getAllOrders = async (req, res) => {
+  try {
+    const [orders] = await pool.query(queries.getAllOrders);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
 module.exports = {
   createOrder,
   getOrderDetailById,
@@ -150,4 +159,5 @@ module.exports = {
   updateOrderStatus,
   updateOrderItemQuantity,
   deleteOrder,
+  getAllOrders
 };

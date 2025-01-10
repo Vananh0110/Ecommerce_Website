@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/admin/Layout';
 import axios from '../../api/axios';
-import {
-  message,
-  Table,
-  Button,
-  Modal,
-  Form,
-  Input,
-} from 'antd';
+import { message, Table, Button, Modal, Form, Input, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const AdminCategory = () => {
@@ -20,6 +13,9 @@ const AdminCategory = () => {
   const [currentCategory, setCurrentCategory] = useState(null);
   const [form] = Form.useForm();
   const [addForm] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [currentCategoryName, setCurrentCategoryName] = useState('');
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -53,7 +49,7 @@ const AdminCategory = () => {
       const payload = {
         category_name: values.category_name,
       };
-      await axios.post('/category/create', payload);
+      await axios.post('/category/', payload);
       message.success('Danh mục mới đã được thêm thành công!');
       setIsAddModalVisible(false);
       addForm.resetFields();
@@ -99,34 +95,54 @@ const AdminCategory = () => {
       title: 'ID',
       dataIndex: 'category_id',
       key: 'category_id',
-      width: '20%',
+      width: '10%',
     },
     {
       title: 'Tên danh mục',
       dataIndex: 'category_name',
       key: 'category_name',
-      width: '60%',
+      width: '40%',
+    },
+    {
+      title: 'Số lượng sản phẩm',
+      dataIndex: 'product_count',
+      key: 'product_count',
+      sorter: (a, b) => a.product_count - b.product_count,
+      width: '20%',
     },
     {
       title: 'Hành động',
       key: 'actions',
       render: (text, record) => (
         <div className="flex gap-2">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-           
-          />
-          <Button
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record.category_id)}
-            danger
-          />
+          <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Popconfirm
+            title="Bạn có chắc chắn muốn xóa danh mục này?"
+            onConfirm={() => handleDelete(record.category_id)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button icon={<DeleteOutlined />} danger />
+          </Popconfirm>
         </div>
       ),
       width: '20%',
     },
   ];
+
+  const handleRowClick = async (record) => {
+    try {
+      const response = await axios.get(
+        `/product/category/${record.category_id}`
+      );
+      setProducts(response.data);
+      setCurrentCategoryName(record.category_name);
+      setIsModalVisible(true);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      message.error('Không thể tải danh sách sản phẩm.');
+    }
+  };
 
   return (
     <AdminLayout>
@@ -151,6 +167,9 @@ const AdminCategory = () => {
           pageSize: 10,
           showSizeChanger: false,
         }}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
       />
       <Modal
         title="Chỉnh sửa danh mục"
@@ -164,9 +183,7 @@ const AdminCategory = () => {
           <Form.Item
             name="category_name"
             label="Tên danh mục"
-            rules={[
-              { required: true, message: 'Vui lòng nhập tên danh mục!' },
-            ]}
+            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
           >
             <Input />
           </Form.Item>
@@ -185,13 +202,60 @@ const AdminCategory = () => {
           <Form.Item
             name="category_name"
             label="Tên danh mục"
-            rules={[
-              { required: true, message: 'Vui lòng nhập tên danh mục!' },
-            ]}
+            rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
           >
             <Input />
           </Form.Item>
         </Form>
+      </Modal>
+      <Modal
+        title={`Danh sách sản phẩm trong danh mục: ${currentCategoryName}`}
+        visible={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <Table
+          dataSource={products}
+          rowKey="product_id"
+          bordered
+          pagination={{
+            pageSize: 5,
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20'],
+          }}
+          columns={[
+            {
+              title: 'STT',
+              key: 'index',
+              render: (text, record, index) => index + 1,
+              width: '10%',
+            },
+            {
+              title: 'Tên sản phẩm',
+              dataIndex: 'name',
+              key: 'name',
+              width: '40%',
+            },
+            {
+              title: 'Giá',
+              dataIndex: 'price',
+              key: 'price',
+              render: (price) =>
+                new Intl.NumberFormat('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                }).format(price),
+              width: '25%',
+            },
+            {
+              title: 'Số lượng',
+              dataIndex: 'stock',
+              key: 'stock',
+              width: '25%',
+            },
+          ]}
+        />
       </Modal>
     </AdminLayout>
   );
