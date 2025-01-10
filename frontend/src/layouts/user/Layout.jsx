@@ -42,7 +42,7 @@ const Layout = ({ children }) => {
       <Link to="/user/profile" className="px-3 hover:text-red-500">
         Tài khoản
       </Link>
-      <Link to="/user/order" className="px-3 hover:text-red-500">
+      <Link to="/orders" className="px-3 hover:text-red-500">
         Đơn mua
       </Link>
       <button
@@ -116,19 +116,21 @@ const Layout = ({ children }) => {
             <div className="flex space-x-3 items-center">
               {user ? (
                 <>
-                  <Popover
-                    content={cartPopoverContent}
-                    trigger="hover"
-                    onOpenChange={(visible) => {
-                      if (visible) fetchCart(user.user_id);
-                    }}
-                  >
-                    <Badge count={cartSummary.totalItems}>
-                      <button className="bg-red-500 text-sm text-white font-normal py-2 px-4 rounded hover:opacity-85">
-                        <ShoppingCartOutlined /> Giỏ hàng
-                      </button>
-                    </Badge>
-                  </Popover>
+                  <Link to="/user/cart">
+                    <Popover
+                      content={cartPopoverContent}
+                      trigger="hover"
+                      onOpenChange={(visible) => {
+                        if (visible) fetchCart(user.user_id);
+                      }}
+                    >
+                      <Badge count={cartSummary.totalItems}>
+                        <button className="bg-red-500 text-sm text-white font-normal py-2 px-4 rounded hover:opacity-85">
+                          <ShoppingCartOutlined /> Giỏ hàng
+                        </button>
+                      </Badge>
+                    </Popover>
+                  </Link>
                   <Popover content={accountOptions} trigger="hover">
                     <div className="flex flex-row gap-3 items-center cursor-pointer">
                       {user.avatar ? (

@@ -70,10 +70,30 @@ const deleteCartOfUserId = async (req, res) => {
     res.status(500).json({ message: 'Internal Serve Error' });
   }
 };
+
+const deleteSelectedCartItems = async (req, res) => {
+  const { cart_ids } = req.body; 
+
+  try {
+    if (!Array.isArray(cart_ids) || cart_ids.length === 0) {
+      return res.status(400).json({ message: 'Danh sách cart_id không hợp lệ' });
+    }
+
+    const [result] = await pool.query(queries.deleteSelectedCart, [
+      cart_ids,
+    ]);
+
+    res.json({ message: 'Xóa sản phẩm thành công', affectedRows: result.affectedRows });
+  } catch (error) {
+    console.error('Error deleting cart items:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 module.exports = {
   getAllCartByUserId,
   addProductToCart,
   updateQuantityProduct,
   deleteCart,
-  deleteCartOfUserId
+  deleteCartOfUserId,
+  deleteSelectedCartItems
 };

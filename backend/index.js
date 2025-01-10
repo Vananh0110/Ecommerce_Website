@@ -10,6 +10,7 @@ const categoryRoute = require('./src/route/categoryRoute');
 const productRoute = require('./src/route/productRoute');
 const commentRoute = require('./src/route/commentRoute');
 const cartRoute = require('./src/route/cartRoute');
+const orderRoute = require('./src/route/orderRoute');
 
 const multer = require('multer');
 const path = require('path');
@@ -22,6 +23,7 @@ app.use('/category', categoryRoute);
 app.use('/product', productRoute);
 app.use('/comment', commentRoute);
 app.use('/cart', cartRoute);
+app.use('/order', orderRoute);
 
 app.use('/uploads', express.static('uploads'));
 

@@ -1,23 +1,57 @@
-const createOrder = `INSERT INTO orders (product_id, user_id, quantity, total_money, payment_type, order_status, user_note, receiver_name, receiver_phone, receiver_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+const orderQueries = {
+  createOrder: `
+    INSERT INTO orders (
+      user_id, total_money, payment_type, order_status, receiver_name, receiver_phone, receiver_address, user_note
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `,
 
-const getOrderById = `SELECT * FROM orders WHERE order_id = ?`;
+  addOrderItems: `
+    INSERT INTO order_items (
+      order_id, product_id, quantity, price
+    ) VALUES ?
+  `,
 
-const getAllOrders = `SELECT * FROM orders`;
+  getOrderDetailById: `
+    SELECT
+    o.order_id,
+    o.total_money,
+    o.payment_type,
+    o.order_status,
+    o.receiver_name,
+    o.receiver_phone,
+    o.receiver_address,
+    o.user_note,
+    o.created_at,
+    oi.quantity,
+    oi.price,
+    p.product_id,
+    p.name as product_name,
+    p.image
+    FROM orders o
+    JOIN order_items oi ON o.order_id = oi.order_id
+    JOIN products p ON oi.product_id = p.product_id
+    WHERE o.order_id = ?;
+  `,
 
-const updateOrder = `UPDATE orders SET quantity = ?, total_money = ?, payment_type = ?, order_status = ?, user_note = ?, receiver_name = ?, receiver_phone = ?, receiver_address = ? WHERE order_id = ?`;
+  getOrdersByUserId: `
+    SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC
+  `,
 
-const deleteOrder = `DELETE FROM orders WHERE order_id = ?`;
+  updateOrderStatus: `
+    UPDATE orders SET order_status = ? WHERE order_id = ?
+  `,
 
-const getOrdersByUserId = `SELECT * FROM orders WHERE user_id = ?`;
+  updateOrderItemQuantity: `
+    UPDATE order_items SET quantity = ? WHERE order_item_id = ?
+  `,
 
-const getOrdersByProductId = `SELECT * FROM orders WHERE product_id = ?`;
+  deleteOrder: `
+    DELETE FROM orders WHERE order_id = ?
+  `,
 
-module.exports = {
-  createOrder,
-  getOrderById,
-  getAllOrders,
-  updateOrder,
-  deleteOrder,
-  getOrdersByUserId,
-  getOrdersByProductId
+  deleteOrderItems: `
+    DELETE FROM order_items WHERE order_id = ?
+  `,
 };
+
+module.exports = orderQueries;

@@ -8,10 +8,13 @@ const deleteCart = `DELETE FROM cart WHERE cart_id = ?`;
 
 const deleteCartOfUserId = `DELETE FROM cart WHERE user_id = ?`
 
+const deleteSelectedCart = `DELETE FROM cart WHERE cart_id IN (?)`
+
 module.exports = {
   getAllCartByUserId,
   addProductToCart,
   updateQuantityProduct,
   deleteCart,
-  deleteCartOfUserId
+  deleteCartOfUserId,
+  deleteSelectedCart
 };
