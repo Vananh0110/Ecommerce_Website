@@ -16,7 +16,8 @@ const OrderSuccessPage = () => {
         <CheckCircleOutlined style={{ fontSize: '64px', color: '#52c41a' }} />
         <h1 className="text-3xl font-bold mt-4">Đặt hàng thành công!</h1>
         <p className="text-lg mt-4">
-          Cảm ơn bạn đã mua hàng tại MotorOnline. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất có thể.
+          Cảm ơn bạn đã mua hàng tại MotorOnline. Chúng tôi sẽ xử lý đơn hàng
+          của bạn sớm nhất có thể.
         </p>
         {orderData.order_id && (
           <p className="text-lg mt-2">
@@ -33,16 +34,12 @@ const OrderSuccessPage = () => {
           </p>
         )}
         <div className="flex justify-center gap-4 mt-6">
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => navigate('/')}
-          >
+          <Button type="primary" size="large" onClick={() => navigate('/')}>
             Quay lại trang chủ
           </Button>
           <Button
             size="large"
-            onClick={() => navigate(`/user/order/${orderData.order_id}`)}
+            onClick={() => navigate(`/orders/${orderData.order_id}`)}
           >
             Xem chi tiết đơn hàng
           </Button>

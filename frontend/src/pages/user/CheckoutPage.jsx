@@ -62,7 +62,17 @@ const CheckoutPage = () => {
           },
         });
       } else if (paymentType === 'Banking') {
-        navigate('/payment', { state: { payload } });
+        const response = await axios.post('/order', payload);
+        const cartIds = state.items.map((item) => item.cart_id);
+        await axios.post('/cart/delete-selected', { cart_ids: cartIds });
+        navigate('/payment', {
+          state: {
+            order_id: response.data.order_id,
+            total: state.total,
+            receiver_name: payload.receiver_name,
+            receiver_address: payload.receiver_address,
+          },
+        });
       }
     } catch (error) {
       console.error('Error during checkout:', error);

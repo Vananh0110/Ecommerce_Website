@@ -13,9 +13,10 @@ import AdminOrder from './pages/admin/AdminOrder';
 import AdminUser from './pages/admin/AdminUser';
 import CheckoutPage from './pages/user/CheckoutPage';
 import PaymentPage from './pages/user/PaymentPage';
-import OrderSuccessPage from './pages/user/orderSuccessPage';
+import OrderSuccessPage from './pages/user/OrderSuccessPage';
 import OrderListPage from './pages/user/OrderListPage';
 import OrderDetailPage from './pages/user/OrderDetailPage';
+import PaymentSuccessPage from './pages/user/PaymentSuccessPage';
 function App() {
   return (
     <BrowserRouter>
@@ -31,6 +32,7 @@ function App() {
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/orders" element={<OrderListPage />} />
         <Route path="/orders/:order_id" element={<OrderDetailPage />} />
+        <Route path="/payment-success" element={<PaymentSuccessPage />} />
 
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/categories" element={<AdminCategory />} />
