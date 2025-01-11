@@ -13,10 +13,11 @@ const sendOrderConfirmation = async (to, orderDetails) => {
   const { order_id, total_money, receiver_name, receiver_address, items } =
     orderDetails;
 
+  console.log('Fields in items:', Object.keys(items[0]));
   const itemList = items
     .map(
       (item) =>
-        `<li>${item.product_name} - ${
+        `<li>Mã sản phẩm:${item.product_id} - ${
           item.quantity
         } x ${item.price.toLocaleString('vi-VN', {
           style: 'currency',

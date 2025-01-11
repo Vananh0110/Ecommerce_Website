@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../../api/axios';
 import Layout from '../../layouts/user/Layout';
 import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
@@ -13,6 +13,7 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(0);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
 
@@ -64,6 +65,25 @@ const ProductDetailPage = () => {
         quantity: quantityToAdd,
       });
       message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+    } catch (error) {
+      message.error('Thêm vào giỏ hàng thất bại!');
+      console.error('Error adding to cart:', error);
+    }
+  };
+
+  const boughtProduct = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    const user_id = user?.user_id;
+    const quantityToAdd = quantity > 0 ? quantity : 1;
+
+    try {
+      await axios.post('/cart/', {
+        user_id,
+        product_id: productId,
+        quantity: quantityToAdd,
+      });
+      message.success('Sản phẩm đã được thêm vào giỏ hàng!');
+      navigate('/user/cart');
     } catch (error) {
       message.error('Thêm vào giỏ hàng thất bại!');
       console.error('Error adding to cart:', error);
@@ -147,7 +167,10 @@ const ProductDetailPage = () => {
             >
               Thêm Vào Giỏ Hàng
             </button>
-            <button className="py-3 bg-red-500 w-56 text-white hover:opacity-85">
+            <button
+              onClick={boughtProduct}
+              className="py-3 bg-red-500 w-56 text-white hover:opacity-85"
+            >
               Mua Ngay
             </button>
           </div>
