@@ -17,5 +17,17 @@ router.delete('/:order_id', orderController.deleteOrder);
 
 router.get('/', orderController.getAllOrders);
 
+router.get('/newest', orderController.getNewestOrders);
+
+router.post('/send-order-confirmation', async (req, res) => {
+    const { email, orderDetails } = req.body;
+    try {
+      await sendOrderConfirmation(email, orderDetails);
+      res.json({ message: 'Email sent successfully' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      res.status(500).json({ message: 'Failed to send email' });
+    }
+  });
 
 module.exports = router;

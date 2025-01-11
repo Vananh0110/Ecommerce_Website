@@ -2,25 +2,46 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../../api/axios';
 import Layout from '../../layouts/user/Layout';
-import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { PlusOutlined, MinusOutlined, UploadOutlined } from '@ant-design/icons';
+import { message, Form, Input, Button, List, Avatar, Upload } from 'antd';
+
+const { TextArea } = Input;
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
   const [product, setProduct] = useState({});
   const [quantity, setQuantity] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [form] = Form.useForm();
+
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(`/product/${productId}`);
+      setProduct(response.data);
+      fetchProduct();
+    } catch (error) {
+      console.error('Failed to fetch product details', error);
+    }
+  };
+
+  const fetchComments = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/comment/by-product/${productId}`);
+      setComments(response.data);
+      fetchComments();
+    } catch (error) {
+      console.error('Failed to fetch comments', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(`/product/${productId}`);
-        setProduct(response.data);
-      } catch (error) {
-        console.error('Failed to fetch product details', error);
-      }
-    };
-
     fetchProduct();
+    fetchComments();
   }, [productId]);
 
   const incrementQuantity = () => {
@@ -35,7 +56,7 @@ const ProductDetailPage = () => {
     const user = JSON.parse(sessionStorage.getItem('user'));
     const user_id = user?.user_id;
     const quantityToAdd = quantity > 0 ? quantity : 1;
-    
+
     try {
       await axios.post('/cart/', {
         user_id,
@@ -46,6 +67,36 @@ const ProductDetailPage = () => {
     } catch (error) {
       message.error('Thêm vào giỏ hàng thất bại!');
       console.error('Error adding to cart:', error);
+    }
+  };
+
+  const handleAddComment = async (values) => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    if (!user) {
+      return message.error('Vui lòng đăng nhập để bình luận.');
+    }
+
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('user_id', user.user_id);
+    formData.append('content', values.content);
+    if (values.image) {
+      formData.append('image', values.image.file);
+    }
+
+    try {
+      setLoading(true);
+      const response = await axios.post('/comment/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setComments((prev) => [response.data, ...prev]);
+      form.resetFields();
+      message.success('Thêm bình luận thành công!');
+    } catch (error) {
+      console.error('Failed to add comment', error);
+      message.error('Thêm bình luận thất bại.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,6 +151,85 @@ const ProductDetailPage = () => {
               Mua Ngay
             </button>
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 mt-6">
+        <h2 className="text-2xl font-bold mb-6">Bình luận</h2>
+        <div className="flex flex-row">
+          <List
+            className="basis-1/2 border-r"
+            itemLayout="vertical"
+            dataSource={comments}
+            renderItem={(comment) => (
+              <List.Item>
+                <List.Item.Meta
+                  avatar={
+                    <Avatar
+                      src={`http://localhost:5000/${comment.avatar}`}
+                      alt={comment.user_name}
+                    />
+                  }
+                  title={
+                    <strong>
+                      {comment.user_name}{' '}
+                      <span className="text-slate-400 font-thin text-sm">
+                        {new Date(comment.created_at).toLocaleString('vi-VN', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </strong>
+                  }
+                  description={comment.content}
+                />
+                {comment.image && (
+                  <img
+                    src={`http://localhost:5000/${comment.image}`}
+                    alt="Comment"
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 4,
+                      marginLeft: 60,
+                      objectFit: 'cover',
+                    }}
+                  />
+                )}
+              </List.Item>
+            )}
+          />
+
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleAddComment}
+            className="basis-1/2 pl-10"
+          >
+            <Form.Item
+              name="content"
+              label="Nội dung"
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng nhập nội dung bình luận.',
+                },
+              ]}
+            >
+              <Input.TextArea rows={3} />
+            </Form.Item>
+            <Form.Item name="image" label="Ảnh (tùy chọn)">
+              <Upload beforeUpload={() => false} maxCount={1}>
+                <Button icon={<UploadOutlined />}>Tải ảnh lên</Button>
+              </Upload>
+            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Thêm bình luận
+            </Button>
+          </Form>
         </div>
       </div>
     </Layout>

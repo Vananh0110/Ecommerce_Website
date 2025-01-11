@@ -1,17 +1,16 @@
-const orderQueries = {
-  createOrder: `
+const createOrder = `
     INSERT INTO orders (
       user_id, total_money, payment_type, order_status, receiver_name, receiver_phone, receiver_address, user_note
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `,
+  `;
 
-  addOrderItems: `
+const  addOrderItems =`
     INSERT INTO order_items (
       order_id, product_id, quantity, price
     ) VALUES ?
-  `,
+  `;
 
-  getOrderDetailById: `
+const  getOrderDetailById = `
     SELECT
     o.order_id,
     o.total_money,
@@ -31,29 +30,48 @@ const orderQueries = {
     JOIN order_items oi ON o.order_id = oi.order_id
     JOIN products p ON oi.product_id = p.product_id
     WHERE o.order_id = ?;
-  `,
+  `;
 
-  getOrdersByUserId: `
+
+const  getOrdersByUserId = `
     SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC
-  `,
+  `;
 
-  updateOrderStatus: `
+const updateOrderStatus = `
     UPDATE orders SET order_status = ? WHERE order_id = ?
-  `,
+  `;
 
-  updateOrderItemQuantity: `
+const  updateOrderItemQuantity = `
     UPDATE order_items SET quantity = ? WHERE order_item_id = ?
-  `,
+  `;
 
-  deleteOrder: `
+const deleteOrder = `
     DELETE FROM orders WHERE order_id = ?
-  `,
+  `;
 
-  deleteOrderItems: `
+const deleteOrderItems = `
     DELETE FROM order_items WHERE order_id = ?
-  `,
-  getAllOrders: `
-  SELECT * FROM orders;`,
-};
+  `;
 
-module.exports = orderQueries;
+const getAllOrders = `
+  SELECT * FROM orders`;
+
+const getNewestOrders = `
+  SELECT order_id, receiver_name, total_money, created_at, order_status 
+      FROM orders 
+      ORDER BY created_at DESC 
+      LIMIT 3
+  `;
+
+module.exports = {
+  createOrder,
+  addOrderItems,
+  getOrderDetailById,
+  getOrdersByUserId,
+  updateOrderStatus,
+  updateOrderItemQuantity,
+  deleteOrder,
+  deleteOrderItems,
+  getAllOrders,
+  getNewestOrders
+}

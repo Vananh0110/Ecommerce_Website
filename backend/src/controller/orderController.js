@@ -1,7 +1,7 @@
 const pool = require('../../db');
 const queries = require('../query/orderQueries');
+const { sendOrderConfirmation } = require('../services/emailService');
 
-// Tạo đơn hàng
 const createOrder = async (req, res) => {
   const {
     user_id,
@@ -15,19 +15,16 @@ const createOrder = async (req, res) => {
   } = req.body;
 
   try {
-    const [orderResult] = await pool.query(
-      queries.createOrder,
-      [
-        user_id,
-        total_money,
-        payment_type,
-        'Pending',
-        receiver_name,
-        receiver_phone,
-        receiver_address,
-        user_note,
-      ]
-    );
+    const [orderResult] = await pool.query(queries.createOrder, [
+      user_id,
+      total_money,
+      payment_type,
+      'Pending',
+      receiver_name,
+      receiver_phone,
+      receiver_address,
+      user_note,
+    ]);
 
     const orderId = orderResult.insertId;
 
@@ -37,8 +34,21 @@ const createOrder = async (req, res) => {
       item.quantity,
       item.price,
     ]);
-
     await pool.query(queries.addOrderItems, [orderItems]);
+
+    const [user] = await pool.query('SELECT email FROM users WHERE user_id = ?', [user_id]);
+    const userEmail = user[0]?.email;
+
+    if (userEmail) {
+      const orderDetails = {
+        order_id: orderId,
+        total_money,
+        receiver_name,
+        receiver_address,
+        items,
+      };
+      await sendOrderConfirmation(userEmail, orderDetails);
+    }
 
     res.status(201).json({ message: 'Order created successfully', order_id: orderId });
   } catch (error) {
@@ -46,7 +56,6 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-
 
 const getOrderDetailById = async (req, res) => {
   const { order_id } = req.params;
@@ -151,7 +160,17 @@ const getAllOrders = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
+
+const getNewestOrders = async (req, res) => {
+  try {
+    const [orders] = await pool.query(queries.getNewestOrders);
+    res.json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 module.exports = {
   createOrder,
   getOrderDetailById,
@@ -159,5 +178,6 @@ module.exports = {
   updateOrderStatus,
   updateOrderItemQuantity,
   deleteOrder,
-  getAllOrders
+  getAllOrders,
+  getNewestOrders
 };

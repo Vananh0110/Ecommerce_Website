@@ -18,9 +18,11 @@ import {
   EditOutlined,
   DeleteOutlined,
   LoadingOutlined,
+  ExportOutlined
 } from '@ant-design/icons';
 import AdminLayout from '../../layouts/admin/Layout';
 import axios from '../../api/axios';
+import * as XLSX from 'xlsx';
 
 const { Search } = Input;
 const { Option } = Select;
@@ -196,6 +198,14 @@ const AdminProduct = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(products);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Products');
+    const exportFileName = 'ProductList.xlsx';
+    XLSX.writeFile(wb, exportFileName);
+  };
+
   return (
     <AdminLayout>
       <h1 className="text-2xl font-semibold">Sản Phẩm</h1>
@@ -216,6 +226,13 @@ const AdminProduct = () => {
             <Option value="AtoZ">A đến Z</Option>
             <Option value="ZtoA">Z đến A</Option>
           </Select>
+          <Button
+            icon={<ExportOutlined />}
+            onClick={handleExport}
+            style={{ marginLeft: 8 }}
+          >
+            Xuất file excel
+          </Button>
         </div>
         <Button type="primary" onClick={showAddModal}>
           Thêm Sản Phẩm Mới

@@ -17,6 +17,7 @@ import OrderSuccessPage from './pages/user/OrderSuccessPage';
 import OrderListPage from './pages/user/OrderListPage';
 import OrderDetailPage from './pages/user/OrderDetailPage';
 import PaymentSuccessPage from './pages/user/PaymentSuccessPage';
+import AdminComment from './pages/admin/AdminComment';
 function App() {
   return (
     <BrowserRouter>
@@ -39,6 +40,7 @@ function App() {
         <Route path="/admin/products" element={<AdminProduct />} />
         <Route path="/admin/orders" element={<AdminOrder />} />
         <Route path="/admin/users" element={<AdminUser />} />
+        <Route path="/admin/comments" element={<AdminComment />} />
       </Routes>
     </BrowserRouter>
   );

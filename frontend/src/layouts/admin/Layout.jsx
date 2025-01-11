@@ -7,6 +7,7 @@ import {
   LogoutOutlined,
   AppstoreOutlined,
   ShoppingCartOutlined,
+  CommentOutlined
 } from '@ant-design/icons';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ const AdminLayout = ({ children }) => {
       '/admin/categories': '3',
       '/admin/products': '4',
       '/admin/orders': '5',
+      '/admin/comments': '6',
     };
     setSelectedKey(pathMap[location.pathname] || '1');
   }, [location]);
@@ -60,13 +62,16 @@ const AdminLayout = ({ children }) => {
           <Menu.Item key="5" icon={<ShoppingCartOutlined />}>
             <Link to="/admin/orders">Đơn hàng</Link>
           </Menu.Item>
-          <Menu.Item key="6" icon={<LogoutOutlined />} onClick={handleLogout}>
+          <Menu.Item key="6" icon={<CommentOutlined />}>
+            <Link to="/admin/comments">Bình luận</Link>
+          </Menu.Item>
+          <Menu.Item key="7" icon={<LogoutOutlined />} onClick={handleLogout}>
             Đăng Xuất
           </Menu.Item>
         </Menu>
       </Sider>
       <Layout className="bg-slate-100" style={{ marginLeft: 200 }}>
-        <Header
+        {/* <Header
           style={{
             padding: 0,
             background: '#fff',
@@ -77,10 +82,10 @@ const AdminLayout = ({ children }) => {
           }}
         >
           Header Content
-        </Header>
+        </Header> */}
         <Content
           style={{
-            margin: '64px 16px 0',
+            margin: '28px 16px 0',
             overflow: 'initial',
             minHeight: '280px',
             padding: '24px',

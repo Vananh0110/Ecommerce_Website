@@ -196,6 +196,50 @@ const getUserWithOrderAmount = async (req, res) => {
   }
 };
 
+const getDashboardStats = async (req, res) => {
+  try {
+    const [[customers]] = await pool.query(
+      'SELECT COUNT(*) AS total_customers FROM users WHERE role_id = 2'
+    );
+    const [[categories]] = await pool.query(
+      'SELECT COUNT(*) AS total_categories FROM categories'
+    );
+    const [[orders]] = await pool.query(
+      'SELECT COUNT(*) AS total_orders FROM orders'
+    );
+    const [[paid]] = await pool.query(
+      'SELECT SUM(total_money) AS total_paid FROM orders WHERE order_status = "Paid"'
+    );
+
+    res.json({
+      total_customers: customers.total_customers,
+      total_categories: categories.total_categories,
+      total_orders: orders.total_orders,
+      total_paid: paid.total_paid || 0,
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+const getNewestUsers = async (req, res) => {
+  try {
+    const query = `
+      SELECT user_id, user_name, email
+      FROM users 
+      WHERE role_id = 2 
+      ORDER BY user_id DESC 
+      LIMIT 3
+    `;
+    const [users] = await pool.query(query);
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching newest users:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   loginUser,
   registerUser,
@@ -204,5 +248,7 @@ module.exports = {
   adminUpdateUser,
   changePassword,
   updateUser,
-  getUserWithOrderAmount
+  getUserWithOrderAmount,
+  getDashboardStats,
+  getNewestUsers
 };

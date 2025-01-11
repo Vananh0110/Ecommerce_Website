@@ -12,4 +12,7 @@ router.put('/admin-update/:user_id', controller.adminUpdateUser);
 router.put('/change-password/:user_id', controller.changePassword);
 router.put('/:user_id', uploadAvatar.single('avatar'), controller.updateUser);
 router.get('/order-total', controller.getUserWithOrderAmount);
+router.get('/dashboard/stats', controller.getDashboardStats);
+router.get('/newest', controller.getNewestUsers)
+
 module.exports = router;

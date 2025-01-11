@@ -3,6 +3,8 @@ import { Table, Button, Tag, Select, Popconfirm, message, Modal } from 'antd';
 import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from '../../api/axios';
 import AdminLayout from '../../layouts/admin/Layout';
+import * as XLSX from 'xlsx';
+import { ExportOutlined } from '@ant-design/icons';
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -92,6 +94,11 @@ const AdminOrder = () => {
         }).format(total),
     },
     {
+      title: 'Phương thức thanh toán',
+      dataIndex: 'payment_type',
+      key: 'payment_type',
+    },
+    {
       title: 'Trạng thái',
       dataIndex: 'order_status',
       key: 'order_status',
@@ -164,10 +171,28 @@ const AdminOrder = () => {
     },
   ];
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(orders);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Orders');
+    const exportFileName = 'OrderList.xlsx';
+    XLSX.writeFile(wb, exportFileName);
+  };
+
   return (
     <AdminLayout>
       <div className="bg-white p-6 rounded shadow mt-6">
         <h1 className="text-2xl font-semibold mb-6">Quản lý đơn hàng</h1>
+        <div className="flex justify-end my-5">
+          <Button
+            icon={<ExportOutlined />}
+            onClick={handleExport}
+            style={{ marginLeft: 8 }}
+            type="primary"
+          >
+            Xuất file excel
+          </Button>
+        </div>
         <Table
           columns={columns}
           dataSource={orders}

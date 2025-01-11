@@ -7,5 +7,6 @@ router.post('/', uploadComment.single('image'), controller.addComment);
 router.get('/by-product/:product_id', controller.getCommentsByProductId);
 router.put('/:comment_id', uploadComment.single('image'), controller.updateComment);
 router.delete('/:comment_id', controller.deleteComment);
+router.get('/', controller.getAllComments);
 
 module.exports = router;

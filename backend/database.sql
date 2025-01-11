@@ -65,10 +65,13 @@ CREATE TABLE `comments` (
     `user_id` INT(11) NOT NULL,
     `content` TEXT NOT NULL,
     `image` TEXT, 
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`comment_id`),
     FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
+
 
 CREATE TABLE `cart` (
     `cart_id` INT(11) NOT NULL AUTO_INCREMENT,

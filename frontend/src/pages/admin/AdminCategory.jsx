@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import AdminLayout from '../../layouts/admin/Layout';
 import axios from '../../api/axios';
 import { message, Table, Button, Modal, Form, Input, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ExportOutlined,
+} from '@ant-design/icons';
+import * as XLSX from 'xlsx';
 
 const AdminCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -144,15 +149,32 @@ const AdminCategory = () => {
     }
   };
 
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(categories);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Categories');
+    const exportFileName = 'CategoryList.xlsx';
+    XLSX.writeFile(wb, exportFileName);
+  };
+
   return (
     <AdminLayout>
       <h1 className="text-2xl font-semibold mb-6">Quản lý danh mục</h1>
       <div className="flex justify-between items-center mb-6 bg-white h-20 rounded-md px-7">
-        <Input
-          placeholder="Tìm kiếm danh mục..."
-          onChange={handleSearch}
-          style={{ width: '50%' }}
-        />
+        <div>
+          <Input
+            placeholder="Tìm kiếm danh mục..."
+            onChange={handleSearch}
+            style={{ width: '250px' }}
+          />
+          <Button
+            icon={<ExportOutlined />}
+            onClick={handleExport}
+            style={{ marginLeft: 8 }}
+          >
+            Xuất file excel
+          </Button>
+        </div>
         <Button type="primary" onClick={() => setIsAddModalVisible(true)}>
           Thêm danh mục mới
         </Button>

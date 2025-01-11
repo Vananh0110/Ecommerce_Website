@@ -47,7 +47,7 @@ const updateComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
     if (newImage && oldImage) {
-      fs.unlink(path.join(__dirname, '..', oldImage), (err) => {
+      fs.unlink(path.join(__dirname, '../..', oldImage), (err) => {
         if (err) {
           console.error(`Failed to delete old image: ${err}`);
         }
@@ -72,7 +72,7 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ message: 'Comment not found' });
     }
     if (image) {
-      fs.unlink(path.join(__dirname, '..', image), (err) => {
+      fs.unlink(path.join(__dirname, '../..', image), (err) => {
         if (err) {
           console.error(`Failed to delete image: ${err}`);
         }
@@ -86,9 +86,20 @@ const deleteComment = async (req, res) => {
   }
 };
 
+const getAllComments = async (req, res) => {
+  try {
+    const [comments] = await pool.query(queries.getAllComments);
+    res.json(comments);
+  } catch (error) {
+    console.error('Error fetching all comments:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   addComment,
   getCommentsByProductId,
   updateComment,
   deleteComment,
+  getAllComments
 };
