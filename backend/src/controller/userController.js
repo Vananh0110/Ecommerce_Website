@@ -208,7 +208,7 @@ const getDashboardStats = async (req, res) => {
       'SELECT COUNT(*) AS total_orders FROM orders'
     );
     const [[paid]] = await pool.query(
-      'SELECT SUM(total_money) AS total_paid FROM orders WHERE order_status = "Paid"'
+      `SELECT SUM(total_money) AS total_paid FROM orders WHERE (payment_type = 'Bank') OR (payment_type = 'COD' AND order_status = 'Hoàn thành')`
     );
 
     res.json({
