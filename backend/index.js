@@ -133,7 +133,7 @@ app.post('/callback', async (req, res) => {
       console.log(`Order ${orderId} thanh toán thành công.`);
 
       await axios.put(`http://localhost:5000/order/${originalOrderId}`, {
-        order_status: 'Paid',
+        order_status: 'Đang xử lý',
       });
 
       res.status(204).send();

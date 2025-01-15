@@ -162,21 +162,21 @@ const AdminUser = () => {
         let text;
 
         switch (status) {
-          case 'active':
+          case 'Đang hoạt động':
             color = 'green';
-            text = 'Active';
+            text = 'Đang hoạt động';
             break;
-          case 'inactive':
-            color = 'red';
-            text = 'Inactive';
-            break;
-          case 'blocked':
+          case 'Không hoạt động':
             color = 'orange';
-            text = 'Blocked';
+            text = 'Không hoạt động';
+            break;
+          case 'Khóa':
+            color = 'red';
+            text = 'Khóa';
             break;
           default:
             color = 'gray';
-            text = 'Unknown';
+            text = 'Không xác định';
         }
 
         return <Tag color={color}>{text}</Tag>;
@@ -246,9 +246,9 @@ const AdminUser = () => {
           </Form.Item>
           <Form.Item name="status" label="Trạng thái">
             <Select placeholder="Chọn trạng thái">
-              <Option value="active">Active</Option>
-              <Option value="inactive">Inactive</Option>
-              <Option value="blocked">Blocked</Option>
+              <Option value="Đang hoạt động">Đang hoạt động</Option>
+              <Option value="Không hoạt động">Không hoạt động</Option>
+              <Option value="Khóa">Khóa</Option>
             </Select>
           </Form.Item>
         </Form>

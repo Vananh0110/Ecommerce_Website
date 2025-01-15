@@ -19,7 +19,7 @@ const createOrder = async (req, res) => {
       user_id,
       total_money,
       payment_type,
-      'Pending',
+      'Chờ xử lý',
       receiver_name,
       receiver_phone,
       receiver_address,

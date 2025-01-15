@@ -1,35 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Tag, Select, Popconfirm, message, Modal } from 'antd';
-import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  Table,
+  Button,
+  Tag,
+  Select,
+  Popconfirm,
+  message,
+  Modal,
+  Tabs,
+} from 'antd';
+import { EyeOutlined, DeleteOutlined, ExportOutlined } from '@ant-design/icons';
 import axios from '../../api/axios';
 import AdminLayout from '../../layouts/admin/Layout';
 import * as XLSX from 'xlsx';
-import { ExportOutlined } from '@ant-design/icons';
+
+const { TabPane } = Tabs;
 
 const AdminOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('Chờ xử lý');
+
+  const orderStatuses = [
+    { key: 'Chờ xử lý', text: 'Chờ xử lý' },
+    { key: 'Đang xử lý', text: 'Đang xử lý' },
+    { key: 'Đã gửi hàng', text: 'Đã gửi hàng' },
+    { key: 'Đang giao hàng', text: 'Đang giao hàng' },
+    { key: 'Đã giao hàng', text: 'Đã giao hàng' },
+    { key: 'Hoàn thành', text: 'Hoàn thành' },
+  ];
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   const fetchOrders = async () => {
     setLoading(true);
     try {
       const response = await axios.get('/order/');
+      console.log(response.data);
       setOrders(response.data);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching orders:', error);
       message.error('Không thể tải danh sách đơn hàng.');
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleStatusChange = async (orderId, status) => {
+  const handleStatusChange = async (orderId, newStatus) => {
     try {
-      await axios.put(`/order/${orderId}`, { order_status: status });
+      await axios.put(`/order/${orderId}`, { order_status: newStatus });
+      setOrders(
+        orders.map((order) =>
+          order.order_id === orderId
+            ? { ...order, order_status: newStatus }
+            : order
+        )
+      );
+      setActiveTab(newStatus);
       message.success('Cập nhật trạng thái đơn hàng thành công!');
-      fetchOrders();
     } catch (error) {
       console.error('Error updating order status:', error);
       message.error('Cập nhật trạng thái đơn hàng thất bại.');
@@ -39,8 +71,8 @@ const AdminOrder = () => {
   const handleDeleteOrder = async (orderId) => {
     try {
       await axios.delete(`/order/${orderId}`);
-      message.success('Đơn hàng đã được xóa thành công.');
       fetchOrders();
+      message.success('Đơn hàng đã được xóa thành công.');
     } catch (error) {
       console.error('Error deleting order:', error);
       message.error('Xóa đơn hàng thất bại.');
@@ -57,10 +89,6 @@ const AdminOrder = () => {
       message.error('Không thể tải chi tiết đơn hàng.');
     }
   };
-
-  useEffect(() => {
-    fetchOrders();
-  }, []);
 
   const columns = [
     {
@@ -86,6 +114,7 @@ const AdminOrder = () => {
     {
       title: 'Tổng tiền',
       dataIndex: 'total_money',
+      key: 'total_money',
       sorter: (a, b) => a.total_money - b.total_money,
       render: (total) =>
         new Intl.NumberFormat('vi-VN', {
@@ -102,21 +131,13 @@ const AdminOrder = () => {
       title: 'Trạng thái',
       dataIndex: 'order_status',
       key: 'order_status',
-      filters: [
-        { text: 'Pending', value: 'Pending' },
-        { text: 'Shipped', value: 'Shipped' },
-        { text: 'Paid', value: 'Paid' },
-        { text: 'Delivered', value: 'Delivered' },
-        { text: 'Cancelled', value: 'Cancelled' },
-      ],
-      onFilter: (value, record) => record.order_status === value,
       render: (status) => {
         let color = 'gray';
-        if (status === 'Pending') color = 'blue';
-        if (status === 'Shipped') color = 'orange';
-        if (status === 'Paid') color = 'green';
-        if (status === 'Delivered') color = 'yellow';
-        if (status === 'Cancelled') color = 'red';
+        if (status === 'Chờ xử lý') color = 'blue';
+        if (status === 'Đang xử lý') color = 'orange';
+        if (status === 'Đã gửi hàng') color = 'green';
+        if (status === 'Đang giao hàng') color = 'yellow';
+        if (status === 'Hoàn thành') color = 'red';
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -134,10 +155,23 @@ const AdminOrder = () => {
         }),
     },
     {
+      title: 'Ngày cập nhật',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
+      render: (date) =>
+        new Date(date).toLocaleDateString('vi-VN', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+    },
+    {
       title: 'Hành động',
       key: 'actions',
       render: (_, record) => (
-        <div className="flex gap-3">
+        <div className="flex gap-2">
           <Button
             icon={<EyeOutlined />}
             type="primary"
@@ -148,13 +182,15 @@ const AdminOrder = () => {
           <Select
             defaultValue={record.order_status}
             style={{ width: 120 }}
-            onChange={(value) => handleStatusChange(record.order_id, value)}
+            onChange={(newStatus) =>
+              handleStatusChange(record.order_id, newStatus)
+            }
           >
-            <Select.Option value="Pending">Pending</Select.Option>
-            <Select.Option value="Paid">Paid</Select.Option>
-            <Select.Option value="Delivered">Delivered</Select.Option>
-            <Select.Option value="Shipped">Shipped</Select.Option>
-            <Select.Option value="Cancelled">Cancelled</Select.Option>
+            {orderStatuses.map((status) => (
+              <Select.Option key={status.key} value={status.key}>
+                {status.text}
+              </Select.Option>
+            ))}
           </Select>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa đơn hàng này không?"
@@ -162,9 +198,7 @@ const AdminOrder = () => {
             okText="Xóa"
             cancelText="Hủy"
           >
-            <Button danger icon={<DeleteOutlined />}>
-              Xóa
-            </Button>
+            <Button danger icon={<DeleteOutlined />} />
           </Popconfirm>
         </div>
       ),
@@ -182,27 +216,34 @@ const AdminOrder = () => {
   return (
     <AdminLayout>
       <div className="bg-white p-6 rounded shadow mt-6">
-        <h1 className="text-2xl font-semibold mb-6">Quản lý đơn hàng</h1>
-        <div className="flex justify-end my-5">
+        <div className="mb-6 flex justify-between items-center">
+          <h1 className="text-2xl font-semibold ">Quản lý đơn hàng</h1>
           <Button
             icon={<ExportOutlined />}
             onClick={handleExport}
-            style={{ marginLeft: 8 }}
+            style={{ marginRight: 8 }}
             type="primary"
           >
-            Xuất file excel
+            Xuất file Excel
           </Button>
         </div>
-        <Table
-          columns={columns}
-          dataSource={orders}
-          rowKey="order_id"
-          loading={loading}
-          pagination={{ pageSize: 10 }}
-        />
+        <Tabs activeKey={activeTab} onChange={setActiveTab} type="card">
+          {orderStatuses.map((status) => (
+            <TabPane tab={status.text} key={status.key}>
+              <Table
+                columns={columns}
+                dataSource={orders.filter(
+                  (order) => order.order_status === status.key
+                )}
+                rowKey="order_id"
+                loading={loading}
+                pagination={{ pageSize: 10 }}
+              />
+            </TabPane>
+          ))}
+        </Tabs>
       </div>
 
-      {/* Modal hiển thị chi tiết đơn hàng */}
       <Modal
         title={`Chi tiết đơn hàng ${selectedOrder?.order_id || ''}`}
         visible={isModalVisible}

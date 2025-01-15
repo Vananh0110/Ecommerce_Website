@@ -17,7 +17,7 @@ CREATE TABLE `users` (
     `phone_number` VARCHAR(255),
     `address` VARCHAR(255),
     `avatar` TEXT,
-    `status` VARCHAR(255) DEFAULT 'active',
+    `status` VARCHAR(255) DEFAULT 'Đang hoạt động',
     `role_id` INT(11),
     PRIMARY KEY (`user_id`),
     FOREIGN KEY (`role_id`) REFERENCES `roles`(`role_id`) ON DELETE SET NULL
@@ -88,7 +88,7 @@ CREATE TABLE `orders` (
     `user_id` INT(11) NOT NULL,
     `total_money` DECIMAL(10, 2) NOT NULL,
     `payment_type` VARCHAR(255) NOT NULL,
-    `order_status` VARCHAR(255) NOT NULL DEFAULT 'Pending',
+    `order_status` VARCHAR(255) NOT NULL DEFAULT 'Chờ xử lý',
     `receiver_name` VARCHAR(255) NOT NULL,
     `receiver_phone` VARCHAR(255) NOT NULL,
     `receiver_address` TEXT NOT NULL,

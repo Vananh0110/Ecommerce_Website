@@ -43,11 +43,11 @@ const OrderListPage = () => {
       key: 'order_status',
       render: (status) => {
         let color = 'gray';
-        if (status === 'Pending') color = 'blue';
-        if (status === 'Shipped') color = 'orange';
-        if (status === 'Paid') color = 'green'
-        if (status === 'Delivered') color = 'yellow';
-        if (status === 'Cancelled') color = 'red';
+        if (status === 'Chờ xử lý') color = 'blue';
+        if (status === 'Đang xử lý') color = 'orange';
+        if (status === 'Đã gửi hàng') color = 'green'
+        if (status === 'Đang giao hàng') color = 'yellow';
+        if (status === 'Hoàn thành') color = 'red';
         return <Tag color={color}>{status}</Tag>;
       },
     },
