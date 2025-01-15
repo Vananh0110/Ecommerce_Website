@@ -120,14 +120,27 @@ const AdminCategory = () => {
       key: 'actions',
       render: (text, record) => (
         <div className="flex gap-2">
-          <Button icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button
+            icon={<EditOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleEdit(record);
+            }}
+          />
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa danh mục này?"
-            onConfirm={() => handleDelete(record.category_id)}
+            onConfirm={(event) => {
+              event.stopPropagation();
+              handleDelete(record.category_id);
+            }}
             okText="Xóa"
             cancelText="Hủy"
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button
+              icon={<DeleteOutlined />}
+              danger
+              onClick={(event) => event.stopPropagation()}
+            />
           </Popconfirm>
         </div>
       ),
