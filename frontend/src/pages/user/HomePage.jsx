@@ -156,7 +156,6 @@ const HomePage = () => {
                 total={filteredProducts.length}
                 pageSize={pageSize}
                 showSizeChanger={false}
-                
               />
             )}
           </div>

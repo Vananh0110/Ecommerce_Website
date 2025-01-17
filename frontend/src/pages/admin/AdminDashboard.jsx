@@ -306,7 +306,7 @@ const AdminDashboard = () => {
               <Bar className="w-full" data={categoryChartData} options={categoryChartOptions} />
             </Card>
           </div>
-          <div className="bg-white p-6 rounded shadow-md mt-6">
+          {/* <div className="bg-white p-6 rounded shadow-md mt-6">
             <h2 className="text-lg font-semibold mb-4">Đơn hàng mới nhất</h2>
             <Table
               columns={recentOrdersColumns}
@@ -314,7 +314,7 @@ const AdminDashboard = () => {
               rowKey="order_id"
               pagination={false}
             />
-          </div>
+          </div> */}
         </>
       )}
     </AdminLayout>
