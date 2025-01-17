@@ -18,6 +18,10 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const pathMap = {
+      '/':'1',
+      '/products':'2',
+    };
     const userString = sessionStorage.getItem('user');
     const storedUser = userString ? JSON.parse(userString) : null;
     if (storedUser) {
@@ -171,14 +175,11 @@ const Layout = ({ children }) => {
           </div>
         </div>
         <Menu mode="horizontal" theme="dark" className="pl-24 h-12">
-          <Menu.Item key="home" icon={<HomeOutlined />}>
-            Trang chủ
+          <Menu.Item key="1" icon={<HomeOutlined />}>
+            <Link to="/home">Trang chủ</Link>
           </Menu.Item>
-          <Menu.Item key="catalog" icon={<AppstoreOutlined />}>
-            Sản phẩm
-          </Menu.Item>
-          <Menu.Item key="contact" icon={<ContactsOutlined />}>
-            Liên hệ
+          <Menu.Item key="2" icon={<AppstoreOutlined />}>
+            <Link to="/products">Sản phẩm</Link>
           </Menu.Item>
         </Menu>
       </header>

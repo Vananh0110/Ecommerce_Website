@@ -18,11 +18,14 @@ import OrderListPage from './pages/user/OrderListPage';
 import OrderDetailPage from './pages/user/OrderDetailPage';
 import PaymentSuccessPage from './pages/user/PaymentSuccessPage';
 import AdminComment from './pages/admin/AdminComment';
+import ProductListPage from './pages/user/ProductListPage';
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route index element={<HomePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/products" element={<ProductListPage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -34,7 +37,7 @@ function App() {
         <Route path="/orders" element={<OrderListPage />} />
         <Route path="/orders/:order_id" element={<OrderDetailPage />} />
         <Route path="/payment-success" element={<PaymentSuccessPage />} />
-
+        
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/categories" element={<AdminCategory />} />
         <Route path="/admin/products" element={<AdminProduct />} />

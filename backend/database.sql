@@ -86,7 +86,7 @@ CREATE TABLE `cart` (
 CREATE TABLE `orders` (
     `order_id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` INT(11) NOT NULL,
-    `total_money` DECIMAL(10, 2) NOT NULL,
+    `total_money` DECIMAL(20, 2) NOT NULL,
     `payment_type` VARCHAR(255) NOT NULL,
     `order_status` VARCHAR(255) NOT NULL DEFAULT 'Chờ xử lý',
     `receiver_name` VARCHAR(255) NOT NULL,
